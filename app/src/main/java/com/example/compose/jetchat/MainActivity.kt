@@ -23,6 +23,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -32,10 +33,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraph
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.compose.jetchat.callhistory.CallHistoryContent
+import com.example.compose.jetchat.callhistory.CallHistoryScreen
+import com.example.compose.jetchat.contact.ContactFragment
+import com.example.compose.jetchat.contact.ContactScreen
+import com.example.compose.jetchat.conversation.ConversationScreen
+import com.example.compose.jetchat.profile.ProfileContent
+import com.example.compose.jetchat.profile.ProfileScreen
+import com.example.compose.jetchat.recentchat.RecentCallScreen
 
 /**
  * Main activity for the app.
@@ -43,24 +52,19 @@ import androidx.navigation.compose.composable
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var navController: NavHostController
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Create a NavHostController and load the navigation graph from XML
-        navController = NavHostController(this@MainActivity)
-
-        val navGraph: NavGraph = navController.navInflater.inflate(R.navigation.mobile_navigation)
-
         val items = listOf(
-            BottomNavigationItem("nav_home", Icons.Default.Home, NavGraphDestinations.Page1),
-            BottomNavigationItem("nav_contact", Icons.Default.Search, NavGraphDestinations.Page2),
-            BottomNavigationItem("nav_profile", Icons.Default.Person, NavGraphDestinations.Page3),
+            BottomNavigationItem("Home", Icons.Default.Home, NavGraphDestinations.RecentChat),
+            BottomNavigationItem("Contact", Icons.Default.Search, NavGraphDestinations.Contact),
+            BottomNavigationItem("Call history", Icons.Default.Call, NavGraphDestinations.CallHistory),
         )
 
         // Set up the activity's content view with a NavHost and a BottomNavigationBar
         setContent {
+            val navController = rememberNavController()
+
             MaterialTheme {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     Scaffold(
@@ -73,14 +77,21 @@ class MainActivity : AppCompatActivity() {
                     ) { innerPadding ->
                         NavHost(
                             navController = navController,
-                            graph = navGraph,
+                            startDestination = NavGraphDestinations.RecentChat,
                             modifier = Modifier.padding(innerPadding)
-                        )
+                        ) {
+                            composable(NavGraphDestinations.Home) { ConversationScreen(navController) }
+                            composable(NavGraphDestinations.Profile + "/{userId}") { backStackEntry ->
+                                ProfileScreen(navController, backStackEntry.arguments?.getString("userId"))
+                            }
+                            composable(NavGraphDestinations.CallHistory) { CallHistoryScreen(navController) }
+                            composable(NavGraphDestinations.Contact) { ContactScreen(navController) }
+                            composable(NavGraphDestinations.RecentChat) { RecentCallScreen(navController) }
+                        }
                     }
                 }
             }
         }
-
     }
 }
 
@@ -114,37 +125,6 @@ fun BottomNavigationBar(
     }
 }
 
-@ExperimentalMaterial3Api
-@Composable
-fun BottomNavigationDemo(navController: NavHostController) {
-    val items = listOf(
-        BottomNavigationItem("Page 1", Icons.Default.Home, NavGraphDestinations.Page1),
-        BottomNavigationItem("Page 2", Icons.Default.Search, NavGraphDestinations.Page2),
-        BottomNavigationItem("Page 3", Icons.Default.Person, NavGraphDestinations.Page3),
-    )
-
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-                items = items,
-            )
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = NavGraphDestinations.Page1,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            // Add the composable functions for each fragment
-            composable(NavGraphDestinations.Page1) { Page1() }
-            composable(NavGraphDestinations.Page2) { Page2() }
-            composable(NavGraphDestinations.Page3) { Page3() }
-        }
-    }
-}
-
-
 data class BottomNavigationItem(
     val label: String,
     val icon: ImageVector,
@@ -152,9 +132,12 @@ data class BottomNavigationItem(
 )
 
 object NavGraphDestinations {
-    const val Page1 = "page1"
-    const val Page2 = "page2"
-    const val Page3 = "page3"
+    const val Home = "home"
+    const val Profile = "profile"
+    const val ChatHistory = "chat_history"
+    const val Contact = "contact"
+    const val CallHistory = "chat_history"
+    const val RecentChat = "recent_chat"
 }
 
 @Composable

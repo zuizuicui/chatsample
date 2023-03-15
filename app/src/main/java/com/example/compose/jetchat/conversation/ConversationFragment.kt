@@ -27,14 +27,17 @@ import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.example.compose.jetchat.MainViewModel
+import com.example.compose.jetchat.NavGraphDestinations
 import com.example.compose.jetchat.R
 import com.example.compose.jetchat.data.exampleUiState
 import com.example.compose.jetchat.theme.JetchatTheme
@@ -46,7 +49,7 @@ class ConversationFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = ComposeView(inflater.context).apply {
         layoutParams = LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
@@ -78,5 +81,29 @@ class ConversationFragment : Fragment() {
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun ConversationScreen(navController: NavController) {
+    JetchatTheme {
+        ConversationContent(
+            uiState = exampleUiState,
+            navigateToProfile = { user ->
+                // Click callback
+                navController.navigate(
+                    NavGraphDestinations.Profile + "/" + user,
+                )
+            },
+            onNavIconPressed = {
+            },
+            // Add padding so that we are inset from any navigation bars
+            modifier = Modifier.windowInsetsPadding(
+                WindowInsets
+                    .navigationBars
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+            )
+        )
     }
 }

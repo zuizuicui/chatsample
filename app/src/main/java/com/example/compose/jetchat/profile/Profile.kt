@@ -74,7 +74,7 @@ import com.example.compose.jetchat.theme.JetchatTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun ProfileScreen(
+fun ProfileContent(
     userData: ProfileScreenState,
     nestedScrollInteropConnection: NestedScrollConnection = rememberNestedScrollInteropConnection()
 ) {
@@ -278,7 +278,7 @@ fun ProfileFab(
 @Composable
 fun ConvPreviewLandscapeMeDefault() {
     JetchatTheme {
-        ProfileScreen(meProfile)
+        ProfileContent(meProfile)
     }
 }
 
@@ -286,7 +286,7 @@ fun ConvPreviewLandscapeMeDefault() {
 @Composable
 fun ConvPreviewPortraitMeDefault() {
     JetchatTheme {
-        ProfileScreen(meProfile)
+        ProfileContent(meProfile)
     }
 }
 
@@ -294,7 +294,7 @@ fun ConvPreviewPortraitMeDefault() {
 @Composable
 fun ConvPreviewPortraitOtherDefault() {
     JetchatTheme {
-        ProfileScreen(colleagueProfile)
+        ProfileContent(colleagueProfile)
     }
 }
 

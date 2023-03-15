@@ -29,11 +29,8 @@ import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -43,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.compose.jetchat.FunctionalityNotAvailablePopup
 import com.example.compose.jetchat.MainViewModel
 import com.example.compose.jetchat.R
@@ -108,7 +107,7 @@ class ProfileFragment : Fragment() {
                     if (userData == null) {
                         ProfileError()
                     } else {
-                        ProfileScreen(
+                        ProfileContent(
                             userData = userData!!,
                             nestedScrollInteropConnection = nestedScrollInteropConnection
                         )
@@ -117,5 +116,48 @@ class ProfileFragment : Fragment() {
             }
         }
         return rootView
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@Composable
+fun ProfileScreen(navController: NavController, userId: String?) {
+    val viewModel: ProfileViewModel = viewModel {
+        ProfileViewModel().apply { setUserId(userId) }
+    }
+
+    JetchatTheme {
+        JetchatAppBar(
+            onNavIconPressed = {  },
+            title = { },
+            actions = {
+                // More icon
+                Icon(
+                    imageVector = Icons.Outlined.MoreVert,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .clickable(onClick = {
+
+                        })
+                        .padding(horizontal = 12.dp, vertical = 16.dp)
+                        .height(24.dp),
+                    contentDescription = userId + stringResource(id = R.string.more_options)
+                )
+            }
+        )
+    }
+
+    val userData by viewModel.userData.observeAsState()
+    val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
+
+    JetchatTheme {
+        if (userData == null) {
+            ProfileError()
+        } else {
+            ProfileContent(
+                userData = userData!!,
+                nestedScrollInteropConnection = nestedScrollInteropConnection
+            )
+        }
     }
 }
