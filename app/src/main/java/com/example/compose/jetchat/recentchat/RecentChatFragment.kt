@@ -5,13 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,9 +18,10 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.example.compose.jetchat.NavGraphDestinations
 import com.example.compose.jetchat.R
+import com.example.compose.jetchat.contact.ContactContent
+import com.example.compose.jetchat.data.exampleContactUiState
 import com.example.compose.jetchat.data.exampleRecentChatUiState
 import com.example.compose.jetchat.theme.JetchatTheme
-import kotlinx.coroutines.launch
 
 class RecentChatFragment : Fragment() {
 
@@ -82,33 +77,10 @@ fun RecentCallScreen(navController: NavController) {
             scrimColor = Color.White.copy(0.32f)
         ) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-                Button(
-                    // Note: If you provide logic outside of onDismissRequest to remove the sheet,
-                    // you must additionally handle intended state cleanup, if any.
-                    onClick = {
-                        scope.launch { bottomSheetState.hide() }.invokeOnCompletion {
-                            if (!bottomSheetState.isVisible) {
-                                openBottomSheet = false
-                            }
-                        }
-                    }
-                ) {
-                    Text("Hide Bottom Sheet")
-                }
+                Text("New Chat")
             }
-            LazyColumn {
-                items(50) {
-                    ListItem(
-                        headlineContent = { Text("Item $it") },
-                        leadingContent = {
-                            Icon(
-                                Icons.Default.Favorite,
-                                contentDescription = "Localized description"
-                            )
-                        }
-                    )
-                }
-            }
+            ContactContent(uiState = exampleContactUiState)
+            Box(modifier = Modifier.height(16.dp))
         }
     }
 }
